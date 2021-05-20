@@ -1,0 +1,28 @@
+version: '3.6'
+
+services:
+
+    database:
+        container_name: db
+        image: mysql:8.0.25
+        restart: always
+        environment: 
+            MYSQL_DATABASE: api
+            MYSQL_ROOT_PASSWORD: ${mysql_root_password}
+        ports:
+            - 6603:3306
+        expose:
+            - 3306
+        volumes:
+            - ./seed_db:/docker-entrypoint-initdb.d
+    
+    server:
+        build: server/
+        environment: 
+            JWT_SECRET: ${JWT_SECRET}
+            JWT_ALGORITHM: ${JWT_ALGORITHM}
+            MYSQL_ROOT_PASSWORD: ${mysql_root_password}
+        command: uvicorn server:app --host=0.0.0.0
+        ports:
+            - 8000:8000
+    
